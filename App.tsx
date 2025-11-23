@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { nanoid } from 'nanoid';
 import { Layout } from './components/Layout';
 import { CustomerMenu } from './components/CustomerMenu';
 import { AdminPanel } from './components/Admin/AdminPanel';
@@ -37,7 +38,7 @@ const App: React.FC = () => {
 
   const handlePlaceOrder = (items: MenuItem[], tId: string) => {
     const newOrder: Order = {
-      id: Date.now().toString(),
+      id: nanoid(),
       tableId: tId,
       items: items.map(i => ({ ...i, quantity: 1 })),
       status: 'pending',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { nanoid } from 'nanoid';
 import { Category } from '../../../types';
 import { Trash2, Edit2, X, Save } from 'lucide-react';
 
@@ -16,7 +17,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
   // Create new category
   const handleAddCategory = () => {
     if (!newCategory.name) return;
-    setCategories([...categories, { id: Date.now().toString(), name: newCategory.name!, description: newCategory.description }]);
+        setCategories([...categories, { id: nanoid(), name: newCategory.name!, description: newCategory.description }]);
     setNewCategory({ name: '', description: '' });
   };
 

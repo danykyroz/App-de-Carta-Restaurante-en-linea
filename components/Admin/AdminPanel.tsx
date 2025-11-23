@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { nanoid } from 'nanoid';
 import { MenuItem, Category, Table, Employee } from '../../types';
 import { AdminNavigation, AdminSection } from './Shared/AdminNavigation';
 import { DeleteModal } from './Shared/DeleteModal';
+import { useDeleteEntity } from './hooks/useDeleteEntity';
 import { ProductsSection } from './Products/ProductsSection';
 import { CategoriesSection } from './Categories/CategoriesSection';
 import { TablesSection } from './Tables/TablesSection';
@@ -18,15 +20,6 @@ interface AdminPanelProps {
   setEmployees: (emps: Employee[]) => void;
 }
 
-// Types for the Delete Modal Logic
-type DeleteType = 'product' | 'category' | 'table' | 'employee';
-interface DeleteState {
-    isOpen: boolean;
-    id: string | null;
-    type: DeleteType | null;
-    title?: string;
-}
-
 export const AdminPanel: React.FC<AdminPanelProps> = ({ 
   items, setItems, 
   categories, setCategories, 
@@ -34,43 +27,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   employees, setEmployees 
 }) => {
   const [activeSection, setActiveSection] = useState<AdminSection>('products');
-  const [deleteModal, setDeleteModal] = useState<DeleteState>({ isOpen: false, id: null, type: null });
-  const [deletingId, setDeletingId] = useState<string | null>(null); // For animation
 
-  // ================= DELETE LOGIC =================
-  const promptDelete = (id: string, type: DeleteType, title?: string) => {
-      setDeleteModal({ isOpen: true, id, type, title });
+  const handlers = {
+    product: (id: string) => setItems(prev => prev.filter(i => i.id !== id)),
+    category: (id: string) => setCategories(prev => prev.filter(c => c.id !== id)),
+    table: (id: string) => setTables(prev => prev.filter(t => t.id !== id)),
+    employee: (id: string) => setEmployees(prev => prev.filter(e => e.id !== id)),
   };
 
-  const confirmDelete = () => {
-      const { id, type } = deleteModal;
-      if (!id || !type) return;
+  const { deleteModal, deletingId, promptDelete, confirmDelete, close } = useDeleteEntity(handlers, 500);
 
-      // 1. Start Animation
-      setDeletingId(id);
-      setDeleteModal({ ...deleteModal, isOpen: false });
-
-      // 2. Wait for animation to finish (500ms to match CSS duration)
-      setTimeout(() => {
-          switch (type) {
-              case 'product':
-                  setItems(items.filter(i => i.id !== id));
-                  break;
-              case 'category':
-                  setCategories(categories.filter(c => c.id !== id));
-                  break;
-              case 'table':
-                  setTables(tables.filter(t => t.id !== id));
-                  break;
-              case 'employee':
-                  setEmployees(employees.filter(e => e.id !== id));
-                  break;
-          }
-          // 3. Cleanup
-          setDeletingId(null);
-          setDeleteModal({ isOpen: false, id: null, type: null });
-      }, 500);
-  };
 
   // ================= SAVE LOGIC =================
   const handleSaveProduct = (newItem: Partial<MenuItem>) => {
@@ -90,7 +56,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     } else {
         // CREATE NEW
         const item: MenuItem = {
-            id: Date.now().toString(),
+            id: nanoid(),
             title: newItem.title!,
             description: newItem.description || '',
             priceCOP: Number(newItem.priceCOP),
@@ -148,12 +114,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             )}
         </main>
 
-        <DeleteModal 
-            isOpen={deleteModal.isOpen}
-            title={deleteModal.title}
-            onClose={() => setDeleteModal({...deleteModal, isOpen: false})}
-            onConfirm={confirmDelete}
-        />
+            <DeleteModal 
+                isOpen={deleteModal.isOpen}
+                title={deleteModal.title}
+                onClose={() => close()}
+                onConfirm={confirmDelete}
+            />
     </div>
   );
 };

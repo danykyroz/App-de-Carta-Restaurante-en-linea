@@ -30,17 +30,21 @@ export const TablesSection: React.FC<TablesSectionProps> = ({ tables, deletingId
   // Safe window origin for SSR
   const origin = useMemo(() => (typeof window !== 'undefined' ? window.location.origin : ''), []);
 
-  const handleAddTable = () => {
+  const handleAddTable = async () => {
     const validation = validateTable(newTable, tables);
     setErrors(validation);
     if (Object.keys(validation).length > 0) return;
 
-    const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? (crypto as any).randomUUID() : Date.now().toString();
+    const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? (crypto as any).randomUUID() : undefined;
+
+    // Fallback to nanoid if crypto.randomUUID is not available
+    const { nanoid } = await import('nanoid');
+    const finalId = id || nanoid();
 
     setTables([
       ...tables,
       {
-        id,
+        id: finalId,
         number: String(newTable.number),
         capacity: Number(newTable.capacity),
         zoneId: newTable.zoneId ?? 'z1',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { nanoid } from 'nanoid';
 import { Employee } from '../../../types';
 import { Trash2 } from 'lucide-react';
 
@@ -14,7 +15,7 @@ export const EmployeesSection: React.FC<EmployeesSectionProps> = ({ employees, d
 
   const handleAddEmployee = () => {
     if (!newEmployee.name) return;
-    setEmployees([...employees, { id: Date.now().toString(), name: newEmployee.name!, role: newEmployee.role || 'waiter', email: newEmployee.email }]);
+        setEmployees([...employees, { id: nanoid(), name: newEmployee.name!, role: newEmployee.role || 'waiter', email: newEmployee.email }]);
     setNewEmployee({ name: '', role: 'waiter', email: '' });
   };
 
