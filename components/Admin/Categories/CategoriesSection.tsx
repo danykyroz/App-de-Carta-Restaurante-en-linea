@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { Category } from '../../../types';
 import { Trash2, Edit2, X, Save, AlertCircle } from 'lucide-react';
 import t from '../../../utils/i18n';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface CategoriesSectionProps {
   categories: Category[];
@@ -12,6 +13,7 @@ interface CategoriesSectionProps {
 }
 
 export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories, deletingId, setCategories, onDelete }) => {
+    const { language } = useLanguage();
   const [newCategory, setNewCategory] = useState<Partial<Category>>({ name: '', description: '' });
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -19,7 +21,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
   // Create new category
   const handleAddCategory = () => {
         if (!newCategory.name || !newCategory.name.trim()) {
-            setErrors({ ...errors, name: t('errors.nameRequired', 'es') });
+            setErrors({ ...errors, name: t('errors.nameRequired', language) });
             return;
         }
 
@@ -32,7 +34,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
   const handleUpdateCategory = () => {
         if (!editingCategory) return;
         if (!editingCategory.name || !editingCategory.name.trim()) {
-            setErrors({ ...errors, editName: t('errors.nameRequired', 'es') });
+            setErrors({ ...errors, editName: t('errors.nameRequired', language) });
             return;
         }
 

@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { CustomerMenu } from './components/CustomerMenu';
 import { AdminPanel } from './components/Admin/AdminPanel';
 import { WaiterDashboard } from './components/Waiter/WaiterDashboard';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { MenuItem, Order, Currency, Language, Category, Table, Employee } from './types';
 import { INITIAL_MENU, INITIAL_CATEGORIES, INITIAL_TABLES, INITIAL_EMPLOYEES } from './constants';
 
@@ -116,7 +117,9 @@ const App: React.FC = () => {
 
   return (
     <Layout currentView={view} onChangeView={setView}>
-      {renderContent()}
+      <LanguageProvider language={language} setLanguage={setLanguage}>
+        {renderContent()}
+      </LanguageProvider>
     </Layout>
   );
 };
