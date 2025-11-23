@@ -20,13 +20,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({ item: initialItem, cat
   
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // CRITICAL: Sync local state when the parent passes a different item (Edit Mode or New Product)
   useEffect(() => {
     setNewItem(initialItem);
+    // Reset AI states when switching items
     setImagePrompt('');
     setShowAiImageControls(false);
+    setIsGeneratingDesc(false);
+    setIsGeneratingImg(false);
   }, [initialItem]);
 
   const hasImage = !!newItem.imageUrl;
+  // Check if it's a base64 string to allow "Edit" feature (CORS prevents editing URLs)
   const isEditableImage = newItem.imageUrl?.startsWith('data:');
 
   const handleGenerateDesc = async () => {
