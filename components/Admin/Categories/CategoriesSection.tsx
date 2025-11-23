@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { Category } from '../../../types';
-import { Trash2, Edit2, X, Save } from 'lucide-react';
+import { Trash2, Edit2, X, Save, AlertCircle } from 'lucide-react';
+import t from '../../../utils/i18n';
 
 interface CategoriesSectionProps {
   categories: Category[];
@@ -13,21 +14,31 @@ interface CategoriesSectionProps {
 export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories, deletingId, setCategories, onDelete }) => {
   const [newCategory, setNewCategory] = useState<Partial<Category>>({ name: '', description: '' });
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Create new category
   const handleAddCategory = () => {
-    if (!newCategory.name) return;
-        setCategories([...categories, { id: nanoid(), name: newCategory.name!, description: newCategory.description }]);
-    setNewCategory({ name: '', description: '' });
+        if (!newCategory.name || !newCategory.name.trim()) {
+            setErrors({ ...errors, name: t('errors.nameRequired', 'es') });
+            return;
+        }
+
+        setCategories([...categories, { id: nanoid(), name: newCategory.name!.trim(), description: newCategory.description }]);
+        setNewCategory({ name: '', description: '' });
+        setErrors({});
   };
 
   // Update existing category
   const handleUpdateCategory = () => {
-    if (!editingCategory || !editingCategory.name) return;
-    
-    const updatedCategories = categories.map(cat => 
-        cat.id === editingCategory.id ? editingCategory : cat
-    );
+        if (!editingCategory) return;
+        if (!editingCategory.name || !editingCategory.name.trim()) {
+            setErrors({ ...errors, editName: t('errors.nameRequired', 'es') });
+            return;
+        }
+
+        const updatedCategories = categories.map(cat =>
+            cat.id === editingCategory.id ? { ...editingCategory, name: editingCategory.name.trim() } : cat
+        );
     
     setCategories(updatedCategories);
     setEditingCategory(null);
@@ -39,12 +50,15 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
         <div className="md:col-span-1 bg-charcoal p-6 rounded-xl border border-gray-800 h-fit">
             <h3 className="text-xl text-gold-400 font-serif mb-6">Add Category</h3>
             <div className="space-y-4">
-                <input 
-                    className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-gold-500 outline-none"
-                    value={newCategory.name}
-                    onChange={e => setNewCategory({...newCategory, name: e.target.value})}
-                    placeholder="Category Name"
-                />
+                                <input
+                                    className={`w-full bg-gray-900 border rounded p-2 text-white focus:outline-none transition-colors ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-700 focus:border-gold-500'}`}
+                                    value={newCategory.name}
+                                    onChange={e => {
+                                        setNewCategory({ ...newCategory, name: e.target.value });
+                                        if (errors.name) setErrors({ ...errors, name: undefined });
+                                    }}
+                                    placeholder="Category Name"
+                                />
                 <input 
                     className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-gold-500 outline-none"
                     value={newCategory.description}
@@ -115,11 +129,14 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
                     <div className="space-y-4">
                         <div>
                             <label className="block text-gray-400 text-sm mb-2">Name</label>
-                            <input 
-                                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-gold-500 outline-none transition-colors"
-                                value={editingCategory.name}
-                                onChange={e => setEditingCategory({...editingCategory, name: e.target.value})}
-                            />
+                                                        <input
+                                                            className={`w-full bg-gray-900 border rounded-lg p-3 text-white focus:outline-none transition-colors ${errors.editName ? 'border-red-500 focus:border-red-500' : 'border-gray-700 focus:border-gold-500'}`}
+                                                            value={editingCategory.name}
+                                                            onChange={e => {
+                                                                setEditingCategory({ ...editingCategory, name: e.target.value });
+                                                                if (errors.editName) setErrors({ ...errors, editName: undefined });
+                                                            }}
+                                                        />
                         </div>
                         <div>
                             <label className="block text-gray-400 text-sm mb-2">Description</label>
