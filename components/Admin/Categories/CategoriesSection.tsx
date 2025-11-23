@@ -103,7 +103,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categories
         {editingCategory && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
                 <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEditingCategory(null)}></div>
-                <div className="relative bg-charcoal border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all scale-100">
+                <div className="relative bg-charcoal border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl animate-fade-in">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl text-gold-400 font-serif">Edit Category</h3>
                         <button onClick={() => setEditingCategory(null)} className="text-gray-400 hover:text-white transition-colors">

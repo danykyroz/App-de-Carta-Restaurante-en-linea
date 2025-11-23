@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MenuItem, Category } from '../../../types';
 import { ArrowLeft, Save, Wand2, Sparkles, RefreshCcw, Upload } from 'lucide-react';
 import { generateMenuDescription, generateDishImage, editDishImage } from '../../../services/geminiService';
@@ -19,6 +19,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({ item: initialItem, cat
   const [dragActive, setDragActive] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setNewItem(initialItem);
+    setImagePrompt('');
+    setShowAiImageControls(false);
+  }, [initialItem]);
 
   const hasImage = !!newItem.imageUrl;
   const isEditableImage = newItem.imageUrl?.startsWith('data:');
