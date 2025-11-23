@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu, Shield, Coffee, ChefHat } from 'lucide-react';
+import LanguageSelector from './Shared/LanguageSelector';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
               <ChefHat className="h-8 w-8 text-gold-500" />
               <span className="ml-2 text-xl font-serif font-bold text-gold-400 tracking-wider">LuxeMenu</span>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-6">
               <div className="ml-10 flex items-baseline space-x-4">
                 <button 
                     onClick={() => onChangeView('landing')}
@@ -39,6 +40,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
                     className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === 'waiter' ? 'text-gold-400' : 'text-gray-300 hover:text-white'}`}>
                     Waiter
                 </button>
+              </div>
+              <div className="ml-6">
+                <LanguageSelector />
               </div>
             </div>
             {/* Mobile menu button would go here, omitted for brevity */}
